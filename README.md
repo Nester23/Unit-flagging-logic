@@ -1,2 +1,2 @@
-# uBindFew.mlog
-A logic processor program for Mindustry that binds few units at a time.
+# Unit binding logic
+Logic processor programs for Mindustry that flag units.
