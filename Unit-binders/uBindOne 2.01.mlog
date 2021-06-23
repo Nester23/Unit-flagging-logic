@@ -1,0 +1,69 @@
+#uControlOne 2.01   -By Nester23
+
+ sensor unitADead unitA @dead
+ jump check_ID equal unitADead false
+
+ #Data precashing/configs;
+  jump dataPrecashed notEqual dataPrecashed false
+  #FlagID generation;
+   op floor procX @thisx 0
+   op floor procY @thisy 0
+   op mul flagID @mapw procY
+   op add flagID flagID procX
+  sensor_bind:
+  ubind changeThis #Select unit type.
+  #Optional sensors;
+   sensor unitCapacity @unit @itemCapacity
+   sensor ammoCapacity @unit @ammoCapacity
+   sensor maxHealth @unit @maxHealth
+   sensor unitSize @unit @size
+   sensor unitRange @unit @range
+   sensor allyTeam @unit @team
+
+  sensor unitType @unit @type
+  jump sensor_bind equal unitType null
+  set dataPrecashed true
+  dataPrecashed:
+
+ #Start of the searching loop;
+  scan_new_unit:
+  ubind unitType
+  #If @unit is unitA then run unitA's code;
+   jump check_unitA notEqual @unit unitA
+   #Get the difference of prevCount and currCount in %;
+    op min minCount prevCount currCount
+    op max maxCount prevCount currCount
+    op div countDiff minCount maxCount
+   set prevCount currCount
+   jump reset_currCount lessThan countDiff 0.95
+   #Search failed; flag a new unit;
+    jump try_flag_curr_unit always 0 0
+    try_flag_new_unit:
+    ubind unitType
+    try_flag_curr_unit:
+    sensor controlled @unit @controlled
+    jump try_flag_new_unit notEqual controlled false
+    sensor flag @unit @flag
+    jump try_flag_new_unit notEqual flag 0
+    ucontrol flag flagID 0 0 0 0
+    jump set_unitA always 0 0
+   #Search results are unreliable; Keep searching;
+    reset_currCount:
+    set currCount 0
+ #If unitA is dead then set the current unit as unitA;
+  check_unitA:
+  sensor unitADead unitA @dead
+  jump add_to_counter equal unitADead false
+  jump scan_new_unit equal @unit null
+  set_unitA:
+  set unitA @unit
+  set currCount 0
+ #End of the loop; count the current unit;
+  add_to_counter:
+  op add currCount currCount 1
+ check_ID:
+ sensor flag @unit @flag
+ jump scan_new_unit notEqual flag flagID
+
+#Your unit control code;
+ ucontrol approach @thisx @thisy 4 0 0
