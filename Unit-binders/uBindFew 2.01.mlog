@@ -100,7 +100,6 @@
        #Error = True;
         print "\n[red]⚠Unable to count units! Unit counter error value: "
         print miscounts
-        print ""
         set @counter errorOut
        no_miscounts:
     op add reprintTickWait @tick 600
